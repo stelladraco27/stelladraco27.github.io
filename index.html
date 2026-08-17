@@ -79,6 +79,11 @@
             line-height: 1.5;
         }
 
+        h2 {
+            margin-bottom: var(--spacing-md);
+            font-weight: 700;
+        }
+
         /* =========================================
            3. VIEW CONTAINERS (APP LAYOUT)
            ========================================= */
@@ -96,13 +101,182 @@
             display: none; /* Hidden by default */
         }
 
-        /* Modifier to show the active tab */
         .view-container--active {
             display: block; 
         }
 
         /* =========================================
-           4. BOTTOM NAVIGATION BAR (BEM)
+           4. COMPONENTS (BEM ARCHITECTURE)
+           ========================================= */
+        
+        /* Cards */
+        .card {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-card);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Material Design 3 subtle shadow */
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card__header-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .card__body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        /* Card Modifiers */
+        .card--active {
+            border-color: var(--color-primary);
+        }
+
+        .card--completed {
+            opacity: 0.6;
+            padding: var(--spacing-md); /* Collapsed padding */
+        }
+
+        .card--completed .card__body {
+            display: none; /* Collapse the body */
+        }
+
+        .card--completed .card__header {
+            margin-bottom: 0; /* Remove gap since body is hidden */
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            border: none;
+            border-radius: var(--radius-button);
+            padding: 14px var(--spacing-xl);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%; /* Default mobile-first width */
+            transition: opacity 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn--primary {
+            background-color: var(--color-primary);
+            color: #FFFFFF;
+        }
+
+        .btn--secondary {
+            background-color: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn--danger {
+            background-color: var(--color-accent);
+            color: #FFFFFF;
+        }
+
+        .btn--fab {
+            position: fixed;
+            bottom: calc(var(--nav-height) + var(--spacing-md));
+            right: var(--spacing-md);
+            width: 56px;
+            height: 56px;
+            padding: 0;
+            border-radius: 50%; /* Overrides pill shape for perfect circle */
+            background-color: var(--color-primary);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--color-primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Utilities */
+        .time-display {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--color-text-primary);
+        }
+
+        .stamped-initials {
+            font-weight: 700;
+            color: var(--color-primary);
+            background-color: rgba(0, 70, 127, 0.1);
+            padding: 4px 12px;
+            border-radius: var(--radius-button);
+        }
+
+        .break-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .break-list__item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        /* =========================================
+           5. BOTTOM NAVIGATION BAR
            ========================================= */
         .bottom-nav {
             position: fixed;
@@ -115,9 +289,8 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); /* Respects edge-to-edge displays on modern devices */
+            padding-bottom: env(safe-area-inset-bottom);
             z-index: 1000;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
         }
 
         .bottom-nav__item {
@@ -144,12 +317,10 @@
             font-weight: 500;
         }
 
-        /* Active state modifier */
         .bottom-nav__item--active {
             color: var(--color-primary);
         }
 
-        /* Fill the Material Icon when active */
         .bottom-nav__item--active .bottom-nav__icon {
             font-variation-settings: 'FILL' 1;
         }
@@ -159,25 +330,106 @@
     <div class="app-container">
         
         <!-- =========================================
-             DYNAMIC VIEWS (Empty Containers for JS)
+             A. SHIFT TAB
              ========================================= -->
-             
-        <!-- A. Shift Tab (Set to active by default for skeleton) -->
         <div id="view-shift" class="view-container view-container--active">
-            <!-- Phase 2/3 Content Injected Here -->
-            <h2 style="text-align: center; margin-top: 2rem;">Shift Dashboard Skeleton</h2>
+            <h2>Shift Dashboard</h2>
+            
+            <!-- Main Shift Controls & Progress -->
+            <div class="card">
+                <div class="card__header">
+                    <span class="card__header-title">
+                        <span class="material-symbols-rounded">schedule</span>
+                        Time to Go
+                    </span>
+                </div>
+                <div class="card__body">
+                    <div class="progress-wrapper">
+                        <div class="progress-labels">
+                            <span>Started: 2:00 PM</span>
+                            <span>Est. End: 10:30 PM</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn--primary">Start Shift</button>
+                        <button class="btn btn--danger">End Shift</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Breaks -->
+            <div class="card">
+                <div class="card__header">
+                    <span class="card__header-title">
+                        <span class="material-symbols-rounded">restaurant</span>
+                        Global Breaks
+                    </span>
+                </div>
+                <div class="card__body">
+                    <ul class="break-list">
+                        <li class="break-list__item">
+                            <span>Lunch</span>
+                            <strong>16:00 - 16:30</strong>
+                        </li>
+                        <li class="break-list__item">
+                            <span>15 Min Break</span>
+                            <strong>18:15 - 18:30</strong>
+                        </li>
+                    </ul>
+                    <button class="btn btn--secondary">Log Break</button>
+                </div>
+            </div>
         </div>
 
-        <!-- B. Sales Floor Tab -->
+        <!-- =========================================
+             B. SALES FLOOR TAB
+             ========================================= -->
         <div id="view-sales-floor" class="view-container">
-            <!-- Phase 2/3 Content Injected Here -->
-            <h2 style="text-align: center; margin-top: 2rem;">Sales Floor Skeleton</h2>
+            <h2>Active Floor</h2>
+
+            <!-- Mock Active Aisle -->
+            <div class="card card--active">
+                <div class="card__header">
+                    <span class="card__header-title">
+                        <span class="material-symbols-rounded">ac_unit</span>
+                        Aisle 14 - Frozen
+                    </span>
+                </div>
+                <div class="card__body">
+                    <div class="time-display">00:15</div>
+                    <button class="btn btn--primary">
+                        <span class="material-symbols-rounded">check_circle</span>
+                        Complete
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mock Completed Aisle -->
+            <div class="card card--completed">
+                <div class="card__header">
+                    <span class="card__header-title">
+                        <span class="material-symbols-rounded">wine_bar</span>
+                        Aisle 2 - Wine
+                    </span>
+                    <span class="stamped-initials">SS</span>
+                </div>
+                <div class="card__body">
+                    <!-- Body collapses when card--completed modifier is applied -->
+                </div>
+            </div>
+
         </div>
 
-        <!-- C. Timeline Tab -->
+        <!-- =========================================
+             C. TIMELINE TAB (Empty for now)
+             ========================================= -->
         <div id="view-timeline" class="view-container">
-            <!-- Phase 2/3 Content Injected Here -->
-            <h2 style="text-align: center; margin-top: 2rem;">Timeline Skeleton</h2>
+            <h2>Timeline</h2>
+            <!-- Timeline will be injected here later -->
         </div>
         
     </div>
@@ -186,19 +438,16 @@
          BOTTOM NAVIGATION BAR
          ========================================= -->
     <nav class="bottom-nav" aria-label="Bottom Navigation">
-        <!-- Shift Button -->
         <div class="bottom-nav__item bottom-nav__item--active" data-target="view-shift">
             <span class="material-symbols-rounded bottom-nav__icon">schedule</span>
             <span class="bottom-nav__label">Shift</span>
         </div>
         
-        <!-- Sales Floor Button -->
         <div class="bottom-nav__item" data-target="view-sales-floor">
             <span class="material-symbols-rounded bottom-nav__icon">storefront</span>
             <span class="bottom-nav__label">Floor</span>
         </div>
         
-        <!-- Timeline Button -->
         <div class="bottom-nav__item" data-target="view-timeline">
             <span class="material-symbols-rounded bottom-nav__icon">history</span>
             <span class="bottom-nav__label">Timeline</span>
