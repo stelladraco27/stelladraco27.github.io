@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Content Security Policy: Locks down execution. Allows self, inline styles (for our single-file app), and Google CDNs -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
+    
+    <title>Fred Meyer Aisle Time Tracker</title>
+    
+    <!-- Web App Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Typography & Icons: Google Fonts (Roboto) & Material Symbols Rounded -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        /* =========================================
+           1. CSS CUSTOM PROPERTIES (VARIABLES)
+           ========================================= */
+        :root {
+            /* Brand Colors - Fred Meyer Professional Theme */
+            --color-primary: #00467F; /* Deep Blue */
+            --color-accent: #E31837; /* Bright Red */
+            --color-background: #F4F6F8; /* Soft background */
+            --color-surface: #FFFFFF; /* Crisp White */
+            --color-text-primary: #1D1D1D;
+            --color-text-secondary: #5F6368;
+            --color-border: #E0E0E0;
+
+            /* UI Foundations */
+            --radius-card: 24px;
+            --radius-button: 50px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            /* Component Dimensions */
+            --nav-height: 80px;
+        }
+
+        /* Dynamic Dark Mode (Matches System Settings) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: #121212;
+                --color-surface: #1E1E1E;
+                --color-text-primary: #E3E3E3;
+                --color-text-secondary: #A0A0A0;
+                --color-border: #333333;
+            }
+        }
+
+        /* =========================================
+           2. GLOBAL RESET & TYPOGRAPHY
+           ========================================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Removes native tap highlight on Android */
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* We manage scrolling within the view containers */
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           3. VIEW CONTAINERS (APP LAYOUT)
+           ========================================= */
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+            padding-bottom: calc(var(--nav-height) + var(--spacing-md)); /* Prevents content from hiding behind nav */
+            display: none; /* Hidden by default */
+        }
+
+        /* Modifier to show the active tab */
+        .view-container--active {
+            display: block; 
+        }
+
+        /* =========================================
+           4. BOTTOM NAVIGATION BAR (BEM)
+           ========================================= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); /* Respects edge-to-edge displays on modern devices */
+            z-index: 1000;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+        }
+
+        .bottom-nav__item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 33.33%;
+            height: 100%;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .bottom-nav__icon {
+            font-size: 28px;
+            margin-bottom: var(--spacing-xs);
+            transition: font-variation-settings 0.2s ease;
+        }
+
+        .bottom-nav__label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Active state modifier */
+        .bottom-nav__item--active {
+            color: var(--color-primary);
+        }
+
+        /* Fill the Material Icon when active */
+        .bottom-nav__item--active .bottom-nav__icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- =========================================
+             DYNAMIC VIEWS (Empty Containers for JS)
+             ========================================= -->
+             
+        <!-- A. Shift Tab (Set to active by default for skeleton) -->
+        <div id="view-shift" class="view-container view-container--active">
+            <!-- Phase 2/3 Content Injected Here -->
+            <h2 style="text-align: center; margin-top: 2rem;">Shift Dashboard Skeleton</h2>
+        </div>
+
+        <!-- B. Sales Floor Tab -->
+        <div id="view-sales-floor" class="view-container">
+            <!-- Phase 2/3 Content Injected Here -->
+            <h2 style="text-align: center; margin-top: 2rem;">Sales Floor Skeleton</h2>
+        </div>
+
+        <!-- C. Timeline Tab -->
+        <div id="view-timeline" class="view-container">
+            <!-- Phase 2/3 Content Injected Here -->
+            <h2 style="text-align: center; margin-top: 2rem;">Timeline Skeleton</h2>
+        </div>
+        
+    </div>
+
+    <!-- =========================================
+         BOTTOM NAVIGATION BAR
+         ========================================= -->
+    <nav class="bottom-nav" aria-label="Bottom Navigation">
+        <!-- Shift Button -->
+        <div class="bottom-nav__item bottom-nav__item--active" data-target="view-shift">
+            <span class="material-symbols-rounded bottom-nav__icon">schedule</span>
+            <span class="bottom-nav__label">Shift</span>
+        </div>
+        
+        <!-- Sales Floor Button -->
+        <div class="bottom-nav__item" data-target="view-sales-floor">
+            <span class="material-symbols-rounded bottom-nav__icon">storefront</span>
+            <span class="bottom-nav__label">Floor</span>
+        </div>
+        
+        <!-- Timeline Button -->
+        <div class="bottom-nav__item" data-target="view-timeline">
+            <span class="material-symbols-rounded bottom-nav__icon">history</span>
+            <span class="bottom-nav__label">Timeline</span>
+        </div>
+    </nav>
+</body>
+</html>
