@@ -12,7 +12,7 @@
     <!-- Web App Manifest Link -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- Typography & Icons: Google Fonts (Roboto) & Material Symbols Rounded -->
+    <!-- Typography & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -23,7 +23,6 @@
            1. CSS CUSTOM PROPERTIES (VARIABLES)
            ========================================= */
         :root {
-            /* Brand Colors - Fred Meyer Professional Theme */
             --color-primary: #00467F;
             --color-accent: #E31837;
             --color-background: #F4F6F8;
@@ -32,7 +31,6 @@
             --color-text-secondary: #5F6368;
             --color-border: #E0E0E0;
 
-            /* UI Foundations */
             --radius-card: 24px;
             --radius-button: 50px;
             --spacing-xs: 4px;
@@ -41,11 +39,9 @@
             --spacing-lg: 24px;
             --spacing-xl: 32px;
 
-            /* Component Dimensions */
             --nav-height: 80px;
         }
 
-        /* Dynamic Dark Mode */
         @media (prefers-color-scheme: dark) {
             :root {
                 --color-background: #121212;
@@ -339,17 +335,18 @@
                 <div class="card__body">
                     <div class="progress-wrapper">
                         <div class="progress-labels">
+                            <!-- We will update these dynamically in a future phase, keeping static for now -->
                             <span>Started: 2:00 PM</span>
                             <span>Est. End: 10:30 PM</span>
                         </div>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 45%;"></div>
+                            <div class="progress-bar" id="shift-progress-bar" style="width: 0%;"></div>
                         </div>
                     </div>
                     
                     <div class="btn-group">
-                        <button class="btn btn--primary">Start Shift</button>
-                        <button class="btn btn--danger">End Shift</button>
+                        <button id="btn-start-shift" class="btn btn--primary">Start Shift</button>
+                        <button id="btn-end-shift" class="btn btn--danger">End Shift</button>
                     </div>
                 </div>
             </div>
@@ -362,15 +359,8 @@
                     </span>
                 </div>
                 <div class="card__body">
-                    <ul class="break-list">
-                        <li class="break-list__item">
-                            <span>Lunch</span>
-                            <strong>16:00 - 16:30</strong>
-                        </li>
-                        <li class="break-list__item">
-                            <span>15 Min Break</span>
-                            <strong>18:15 - 18:30</strong>
-                        </li>
+                    <ul class="break-list" id="shift-break-list">
+                        <!-- Breaks rendered dynamically here via JS -->
                     </ul>
                     <button class="btn btn--secondary">Log Break</button>
                 </div>
@@ -382,7 +372,6 @@
              ========================================= -->
         <div id="view-sales-floor" class="view-container">
             <h2>Active Floor</h2>
-
             <div class="card card--active">
                 <div class="card__header">
                     <span class="card__header-title">
@@ -410,7 +399,6 @@
                 <div class="card__body">
                 </div>
             </div>
-
         </div>
 
         <!-- =========================================
@@ -422,6 +410,9 @@
         
     </div>
 
+    <!-- =========================================
+         BOTTOM NAVIGATION BAR
+         ========================================= -->
     <nav class="bottom-nav" aria-label="Bottom Navigation">
         <div class="bottom-nav__item bottom-nav__item--active" data-target="view-shift">
             <span class="material-symbols-rounded bottom-nav__icon">schedule</span>
@@ -440,40 +431,44 @@
     </nav>
 
     <!-- =========================================
-         PHASE 3: JAVASCRIPT FOUNDATION & STATE
+         JAVASCRIPT FOUNDATION & UI BINDING
          ========================================= -->
     <script>
-        // Use an IIFE (Immediately Invoked Function Expression) or a clean block 
-        // to keep the global scope pollution to an absolute minimum.
         (() => {
             'use strict';
 
-            /* --- 1. Tab Navigation Logic --- */
+            /* --- 1. DOM Element Selectors --- */
+            // Navigation
             const navItems = document.querySelectorAll('.bottom-nav__item');
             const viewContainers = document.querySelectorAll('.view-container');
+            
+            // Shift Tab Elements
+            const shiftProgressBar = document.getElementById('shift-progress-bar');
+            const shiftBreakList = document.getElementById('shift-break-list');
+            const btnStartShift = document.getElementById('btn-start-shift');
+            const btnEndShift = document.getElementById('btn-end-shift');
 
-            // Attach listeners to all nav items
+
+            /* --- 2. Tab Navigation Logic --- */
             navItems.forEach(item => {
                 item.addEventListener('click', () => {
-                    // Remove active states globally
                     navItems.forEach(nav => nav.classList.remove('bottom-nav__item--active'));
                     viewContainers.forEach(view => view.classList.remove('view-container--active'));
 
-                    // Apply active states to target
                     const targetId = item.getAttribute('data-target');
                     item.classList.add('bottom-nav__item--active');
                     document.getElementById(targetId).classList.add('view-container--active');
                 });
             });
 
-            /* --- 2. IndexedDB Promise Wrapper --- */
+
+            /* --- 3. IndexedDB Promise Wrapper --- */
             const DB = {
                 dbName: 'AisleTrackerDB',
                 storeName: 'shifts',
                 version: 1,
                 db: null,
 
-                // Initialize the IndexedDB
                 async init() {
                     return new Promise((resolve, reject) => {
                         const request = indexedDB.open(this.dbName, this.version);
@@ -481,7 +476,6 @@
                         request.onupgradeneeded = (event) => {
                             const db = event.target.result;
                             if (!db.objectStoreNames.contains(this.storeName)) {
-                                // ShiftId is our Unix timestamp master key
                                 db.createObjectStore(this.storeName, { keyPath: 'shiftId' });
                             }
                         };
@@ -499,7 +493,6 @@
                     });
                 },
 
-                // Save or update a shift object
                 async saveShift(shiftObj) {
                     return new Promise((resolve, reject) => {
                         if (!this.db) return reject('Database not initialized');
@@ -509,30 +502,13 @@
                         const request = store.put(shiftObj);
 
                         request.onsuccess = () => resolve(true);
-                        request.onerror = (event) => {
-                            console.error('Error saving shift:', event.target.error);
-                            reject(event.target.error);
-                        };
-                    });
-                },
-
-                // Retrieve a shift object by its ID
-                async getShift(shiftId) {
-                    return new Promise((resolve, reject) => {
-                        if (!this.db) return reject('Database not initialized');
-                        
-                        const transaction = this.db.transaction([this.storeName], 'readonly');
-                        const store = transaction.objectStore(this.storeName);
-                        const request = store.get(shiftId);
-
-                        request.onsuccess = (event) => resolve(event.target.result);
                         request.onerror = (event) => reject(event.target.error);
                     });
                 }
             };
 
-            /* --- 3. State Management (The Proxy) --- */
-            // Blueprint mock data matching the exact JSON schema
+
+            /* --- 4. State Management (The Proxy) --- */
             const rawShiftState = {
                 shiftId: 1723847479000, 
                 dateLabel: "2026-08-16",
@@ -556,16 +532,6 @@
                             { timestamp: 1723848000000, note: "Helped customer find ice cream" }
                         ],
                         comments: "Freezer door 4 is squeaking."
-                    },
-                    {
-                        id: "aisle_2_wine",
-                        displayName: "Aisle 2 (Wine)",
-                        category: "Wine",
-                        startTime: 1723849600000,
-                        endTime: null,
-                        status: "active",
-                        interruptions: [],
-                        comments: ""
                     }
                 ],
                 endOfShiftChecklist: {
@@ -576,35 +542,81 @@
                 }
             };
 
-            // Wrap the raw state in a Proxy to detect changes automatically
             const currentShift = new Proxy(rawShiftState, {
                 set(target, property, value) {
-                    // Update the underlying data
                     target[property] = value;
-                    
-                    // Log the change
                     console.log(`State updated: ${property}`, value);
                     
-                    // Automatically persist to IndexedDB asynchronously
-                    // (Using .catch to handle promise rejection without blocking)
+                    // Auto-save to DB
                     DB.saveShift(target).catch(err => console.error("Auto-save failed", err));
                     
-                    // Must return true to indicate successful assignment
+                    // Reactivity: Re-render the UI when state changes
+                    renderShiftDashboard();
+                    
                     return true; 
                 }
             });
 
-            /* --- 4. Initialization --- */
-            // Expose DB and currentShift to the window object temporarily 
-            // so we can interact with them in the browser console for testing.
+
+            /* --- 5. UI Rendering Logic --- */
+            function renderShiftDashboard() {
+                // 1. Calculate and Render Progress Bar
+                if (currentShift.startTime) {
+                    // Using current time vs start time for calculation
+                    const now = Date.now();
+                    const elapsedMs = now - currentShift.startTime;
+                    
+                    // Assuming standard 8 hour shift (8 hours * 60 min * 60 sec * 1000 ms)
+                    const eightHoursInMs = 8 * 60 * 60 * 1000;
+                    
+                    let progressPercent = (elapsedMs / eightHoursInMs) * 100;
+                    
+                    // Clamp between 0 and 100 so the bar doesn't overflow
+                    progressPercent = Math.max(0, Math.min(progressPercent, 100));
+                    
+                    shiftProgressBar.style.width = `${progressPercent}%`;
+                } else {
+                    shiftProgressBar.style.width = '0%';
+                }
+
+                // 2. Render Global Breaks List (Safe XSS practice)
+                // Clear the current list
+                shiftBreakList.innerHTML = ''; 
+
+                // Loop through the data and build DOM elements
+                currentShift.globalBreaks.forEach(breakItem => {
+                    const li = document.createElement('li');
+                    li.className = 'break-list__item';
+
+                    const typeSpan = document.createElement('span');
+                    typeSpan.textContent = breakItem.type;
+
+                    const timeStrong = document.createElement('strong');
+                    
+                    // Format times for display (naive local time extraction)
+                    const startTime = new Date(breakItem.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const endTime = breakItem.end ? new Date(breakItem.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing';
+                    
+                    timeStrong.textContent = `${startTime} - ${endTime}`;
+
+                    // Assemble the item and append to the list
+                    li.appendChild(typeSpan);
+                    li.appendChild(timeStrong);
+                    shiftBreakList.appendChild(li);
+                });
+            }
+
+
+            /* --- 6. Initialization --- */
             window.DB = DB;
             window.currentShift = currentShift;
 
-            // Start the DB
             DB.init().then(() => {
-                // Perform a dry-run save just to populate the DB with our mock data
                 DB.saveShift(currentShift).then(() => {
                     console.log('Initial mock data populated to IndexedDB.');
+                    
+                    // Trigger the first render on load
+                    renderShiftDashboard();
                 });
             });
 
