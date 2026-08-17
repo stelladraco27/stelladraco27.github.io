@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- This is the first comment: Apple's -->
+    
     <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
     
@@ -335,7 +335,6 @@
                 <div class="card__body">
                     <div class="progress-wrapper">
                         <div class="progress-labels">
-                            <!-- We will update these dynamically in a future phase, keeping static for now -->
                             <span>Started: 2:00 PM</span>
                             <span>Est. End: 10:30 PM</span>
                         </div>
@@ -372,32 +371,9 @@
              ========================================= -->
         <div id="view-sales-floor" class="view-container">
             <h2>Active Floor</h2>
-            <div class="card card--active">
-                <div class="card__header">
-                    <span class="card__header-title">
-                        <span class="material-symbols-rounded">ac_unit</span>
-                        Aisle 14 - Frozen
-                    </span>
-                </div>
-                <div class="card__body">
-                    <div class="time-display">00:15</div>
-                    <button class="btn btn--primary">
-                        <span class="material-symbols-rounded">check_circle</span>
-                        Complete
-                    </button>
-                </div>
-            </div>
-
-            <div class="card card--completed">
-                <div class="card__header">
-                    <span class="card__header-title">
-                        <span class="material-symbols-rounded">wine_bar</span>
-                        Aisle 2 - Wine
-                    </span>
-                    <span class="stamped-initials">SS</span>
-                </div>
-                <div class="card__body">
-                </div>
+            <!-- Outer container for dynamically injected aisle cards -->
+            <div id="sales-floor-container">
+                <!-- Aisle cards rendered dynamically here via JS -->
             </div>
         </div>
 
@@ -447,6 +423,9 @@
             const shiftBreakList = document.getElementById('shift-break-list');
             const btnStartShift = document.getElementById('btn-start-shift');
             const btnEndShift = document.getElementById('btn-end-shift');
+
+            // Sales Floor Tab Elements
+            const salesFloorContainer = document.getElementById('sales-floor-container');
 
 
             /* --- 2. Tab Navigation Logic --- */
@@ -532,6 +511,16 @@
                             { timestamp: 1723848000000, note: "Helped customer find ice cream" }
                         ],
                         comments: "Freezer door 4 is squeaking."
+                    },
+                    {
+                        id: "aisle_2_wine",
+                        displayName: "Aisle 2 (Wine)",
+                        category: "Wine",
+                        startTime: 1723849600000,
+                        endTime: null,
+                        status: "active",
+                        interruptions: [],
+                        comments: ""
                     }
                 ],
                 endOfShiftChecklist: {
@@ -552,6 +541,7 @@
                     
                     // Reactivity: Re-render the UI when state changes
                     renderShiftDashboard();
+                    renderSalesFloor();
                     
                     return true; 
                 }
@@ -559,19 +549,26 @@
 
 
             /* --- 5. UI Rendering Logic --- */
+            
+            // Helper function to map categories to Material Symbols
+            const getCategoryIcon = (category) => {
+                const iconMap = {
+                    'Frozen': 'ac_unit',
+                    'Wine': 'wine_bar',
+                    'Hydration': 'water_drop',
+                    'Dairy': 'water_bottle',
+                    'HABA': 'medication'
+                };
+                return iconMap[category] || 'storefront';
+            };
+
             function renderShiftDashboard() {
-                // 1. Calculate and Render Progress Bar
                 if (currentShift.startTime) {
-                    // Using current time vs start time for calculation
                     const now = Date.now();
                     const elapsedMs = now - currentShift.startTime;
-                    
-                    // Assuming standard 8 hour shift (8 hours * 60 min * 60 sec * 1000 ms)
                     const eightHoursInMs = 8 * 60 * 60 * 1000;
                     
                     let progressPercent = (elapsedMs / eightHoursInMs) * 100;
-                    
-                    // Clamp between 0 and 100 so the bar doesn't overflow
                     progressPercent = Math.max(0, Math.min(progressPercent, 100));
                     
                     shiftProgressBar.style.width = `${progressPercent}%`;
@@ -579,11 +576,8 @@
                     shiftProgressBar.style.width = '0%';
                 }
 
-                // 2. Render Global Breaks List (Safe XSS practice)
-                // Clear the current list
                 shiftBreakList.innerHTML = ''; 
 
-                // Loop through the data and build DOM elements
                 currentShift.globalBreaks.forEach(breakItem => {
                     const li = document.createElement('li');
                     li.className = 'break-list__item';
@@ -592,17 +586,94 @@
                     typeSpan.textContent = breakItem.type;
 
                     const timeStrong = document.createElement('strong');
-                    
-                    // Format times for display (naive local time extraction)
                     const startTime = new Date(breakItem.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     const endTime = breakItem.end ? new Date(breakItem.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing';
-                    
                     timeStrong.textContent = `${startTime} - ${endTime}`;
 
-                    // Assemble the item and append to the list
                     li.appendChild(typeSpan);
                     li.appendChild(timeStrong);
                     shiftBreakList.appendChild(li);
+                });
+            }
+
+            function renderSalesFloor() {
+                // Safely clear out the container before dynamically rebuilding
+                salesFloorContainer.innerHTML = '';
+
+                currentShift.aisles.forEach(aisle => {
+                    // Create the Card Container
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    if (aisle.status === 'active') {
+                        card.classList.add('card--active');
+                    } else if (aisle.status === 'completed') {
+                        card.classList.add('card--completed');
+                    }
+
+                    // --- Card Header ---
+                    const header = document.createElement('div');
+                    header.className = 'card__header';
+
+                    const headerTitle = document.createElement('span');
+                    headerTitle.className = 'card__header-title';
+
+                    const icon = document.createElement('span');
+                    icon.className = 'material-symbols-rounded';
+                    icon.textContent = getCategoryIcon(aisle.category);
+
+                    const titleText = document.createTextNode(` ${aisle.displayName}`);
+
+                    headerTitle.appendChild(icon);
+                    headerTitle.appendChild(titleText);
+                    header.appendChild(headerTitle);
+
+                    // Add stamped initials if completed
+                    if (aisle.status === 'completed' && currentShift.employeeInitials) {
+                        const stampedInitials = document.createElement('span');
+                        stampedInitials.className = 'stamped-initials';
+                        stampedInitials.textContent = currentShift.employeeInitials;
+                        header.appendChild(stampedInitials);
+                    }
+
+                    card.appendChild(header);
+
+                    // --- Card Body (only relevant for active/uncompleted cards per our CSS) ---
+                    const body = document.createElement('div');
+                    body.className = 'card__body';
+
+                    // Mock Time Display calculation
+                    const timeDisplay = document.createElement('div');
+                    timeDisplay.className = 'time-display';
+                    let displayString = '00:00';
+                    
+                    if (aisle.startTime) {
+                        const endTimeTarget = aisle.endTime ? aisle.endTime : Date.now();
+                        const diffMins = Math.floor((endTimeTarget - aisle.startTime) / 60000);
+                        const hours = String(Math.floor(diffMins / 60)).padStart(2, '0');
+                        const mins = String(diffMins % 60).padStart(2, '0');
+                        displayString = `${hours}:${mins}`;
+                    }
+                    timeDisplay.textContent = displayString;
+                    body.appendChild(timeDisplay);
+
+                    // Render Complete Button (only if active)
+                    if (aisle.status === 'active' || !aisle.status) {
+                        const completeBtn = document.createElement('button');
+                        completeBtn.className = 'btn btn--primary';
+
+                        const completeIcon = document.createElement('span');
+                        completeIcon.className = 'material-symbols-rounded';
+                        completeIcon.textContent = 'check_circle';
+
+                        const completeText = document.createTextNode(' Complete');
+
+                        completeBtn.appendChild(completeIcon);
+                        completeBtn.appendChild(completeText);
+                        body.appendChild(completeBtn);
+                    }
+
+                    card.appendChild(body);
+                    salesFloorContainer.appendChild(card);
                 });
             }
 
@@ -615,8 +686,9 @@
                 DB.saveShift(currentShift).then(() => {
                     console.log('Initial mock data populated to IndexedDB.');
                     
-                    // Trigger the first render on load
+                    // Trigger initial renders
                     renderShiftDashboard();
+                    renderSalesFloor();
                 });
             });
 
