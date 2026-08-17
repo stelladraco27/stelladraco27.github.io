@@ -405,7 +405,6 @@
             <span class="bottom-nav__label">Timeline</span>
         </div>
     </nav>
-
     <!-- =========================================
          JAVASCRIPT FOUNDATION & UI BINDING
          ========================================= -->
@@ -493,7 +492,7 @@
                 dateLabel: "2026-08-16",
                 pic: "Dillon",
                 employeeInitials: "SS",
-                startTime: 1723847479000,
+                startTime: null, // Set to null by default for testing the start button
                 endTime: null,
                 shiftComments: "",
                 globalBreaks: [
@@ -505,11 +504,9 @@
                         displayName: "Aisle 14 (Frozen)",
                         category: "Frozen",
                         startTime: 1723847500000,
-                        endTime: 1723849500000,
-                        status: "completed",
-                        interruptions: [
-                            { timestamp: 1723848000000, note: "Helped customer find ice cream" }
-                        ],
+                        endTime: null,
+                        status: "active",
+                        interruptions: [],
                         comments: "Freezer door 4 is squeaking."
                     },
                     {
@@ -549,8 +546,6 @@
 
 
             /* --- 5. UI Rendering Logic --- */
-            
-            // Helper function to map categories to Material Symbols
             const getCategoryIcon = (category) => {
                 const iconMap = {
                     'Frozen': 'ac_unit',
@@ -601,7 +596,6 @@
                 salesFloorContainer.innerHTML = '';
 
                 currentShift.aisles.forEach(aisle => {
-                    // Create the Card Container
                     const card = document.createElement('div');
                     card.className = 'card';
                     if (aisle.status === 'active') {
@@ -627,7 +621,6 @@
                     headerTitle.appendChild(titleText);
                     header.appendChild(headerTitle);
 
-                    // Add stamped initials if completed
                     if (aisle.status === 'completed' && currentShift.employeeInitials) {
                         const stampedInitials = document.createElement('span');
                         stampedInitials.className = 'stamped-initials';
@@ -637,11 +630,10 @@
 
                     card.appendChild(header);
 
-                    // --- Card Body (only relevant for active/uncompleted cards per our CSS) ---
+                    // --- Card Body ---
                     const body = document.createElement('div');
                     body.className = 'card__body';
 
-                    // Mock Time Display calculation
                     const timeDisplay = document.createElement('div');
                     timeDisplay.className = 'time-display';
                     let displayString = '00:00';
@@ -656,10 +648,11 @@
                     timeDisplay.textContent = displayString;
                     body.appendChild(timeDisplay);
 
-                    // Render Complete Button (only if active)
+                    // Render Complete Button and inject data-id
                     if (aisle.status === 'active' || !aisle.status) {
                         const completeBtn = document.createElement('button');
                         completeBtn.className = 'btn btn--primary';
+                        completeBtn.dataset.id = aisle.id; // Inject ID for event delegation
 
                         const completeIcon = document.createElement('span');
                         completeIcon.className = 'material-symbols-rounded';
@@ -678,7 +671,45 @@
             }
 
 
-            /* --- 6. Initialization --- */
+            /* --- 6. Event Listeners & Interaction --- */
+            
+            // Shift Controls
+            btnStartShift.addEventListener('click', () => {
+                if (!currentShift.startTime) {
+                    currentShift.startTime = Date.now();
+                }
+            });
+
+            btnEndShift.addEventListener('click', () => {
+                if (!currentShift.endTime) {
+                    currentShift.endTime = Date.now();
+                }
+            });
+
+            // Sales Floor Interactions (Event Delegation)
+            salesFloorContainer.addEventListener('click', (event) => {
+                // Check if we clicked the primary button or something inside it
+                const btn = event.target.closest('.btn--primary');
+                
+                if (btn && btn.dataset.id) {
+                    const aisleId = btn.dataset.id;
+                    
+                    // Create a shallow copy to ensure Proxy set trap triggers properly
+                    const updatedAisles = [...currentShift.aisles];
+                    const aisleIndex = updatedAisles.findIndex(a => a.id === aisleId);
+                    
+                    if (aisleIndex !== -1) {
+                        updatedAisles[aisleIndex].status = 'completed';
+                        updatedAisles[aisleIndex].endTime = Date.now();
+                        
+                        // Reassigning the array triggers the proxy
+                        currentShift.aisles = updatedAisles;
+                    }
+                }
+            });
+
+
+            /* --- 7. Initialization --- */
             window.DB = DB;
             window.currentShift = currentShift;
 
