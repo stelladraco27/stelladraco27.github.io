@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Content Security Policy: Locks down execution. Allows self, inline styles (for our single-file app), and Google CDNs -->
+    <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
     
     <title>Fred Meyer Aisle Time Tracker</title>
@@ -24,10 +24,10 @@
            ========================================= */
         :root {
             /* Brand Colors - Fred Meyer Professional Theme */
-            --color-primary: #00467F; /* Deep Blue */
-            --color-accent: #E31837; /* Bright Red */
-            --color-background: #F4F6F8; /* Soft background */
-            --color-surface: #FFFFFF; /* Crisp White */
+            --color-primary: #00467F;
+            --color-accent: #E31837;
+            --color-background: #F4F6F8;
+            --color-surface: #FFFFFF;
             --color-text-primary: #1D1D1D;
             --color-text-secondary: #5F6368;
             --color-border: #E0E0E0;
@@ -45,7 +45,7 @@
             --nav-height: 80px;
         }
 
-        /* Dynamic Dark Mode (Matches System Settings) */
+        /* Dynamic Dark Mode */
         @media (prefers-color-scheme: dark) {
             :root {
                 --color-background: #121212;
@@ -63,13 +63,13 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent; /* Removes native tap highlight on Android */
+            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
             height: 100%;
             width: 100%;
-            overflow: hidden; /* We manage scrolling within the view containers */
+            overflow: hidden;
         }
 
         body {
@@ -97,8 +97,8 @@
             flex: 1;
             overflow-y: auto;
             padding: var(--spacing-md);
-            padding-bottom: calc(var(--nav-height) + var(--spacing-md)); /* Prevents content from hiding behind nav */
-            display: none; /* Hidden by default */
+            padding-bottom: calc(var(--nav-height) + var(--spacing-md));
+            display: none;
         }
 
         .view-container--active {
@@ -108,14 +108,12 @@
         /* =========================================
            4. COMPONENTS (BEM ARCHITECTURE)
            ========================================= */
-        
-        /* Cards */
         .card {
             background-color: var(--color-surface);
             border-radius: var(--radius-card);
             padding: var(--spacing-lg);
             margin-bottom: var(--spacing-md);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Material Design 3 subtle shadow */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
@@ -141,25 +139,23 @@
             gap: var(--spacing-md);
         }
 
-        /* Card Modifiers */
         .card--active {
             border-color: var(--color-primary);
         }
 
         .card--completed {
             opacity: 0.6;
-            padding: var(--spacing-md); /* Collapsed padding */
+            padding: var(--spacing-md);
         }
 
         .card--completed .card__body {
-            display: none; /* Collapse the body */
+            display: none;
         }
 
         .card--completed .card__header {
-            margin-bottom: 0; /* Remove gap since body is hidden */
+            margin-bottom: 0;
         }
 
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -172,7 +168,7 @@
             font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            width: 100%; /* Default mobile-first width */
+            width: 100%;
             transition: opacity 0.2s ease, transform 0.1s ease;
         }
 
@@ -203,14 +199,13 @@
             width: 56px;
             height: 56px;
             padding: 0;
-            border-radius: 50%; /* Overrides pill shape for perfect circle */
+            border-radius: 50%;
             background-color: var(--color-primary);
             color: #FFFFFF;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 100;
         }
 
-        /* Progress Bar */
         .progress-wrapper {
             display: flex;
             flex-direction: column;
@@ -240,7 +235,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Utilities */
         .time-display {
             font-size: 2rem;
             font-weight: 700;
@@ -335,7 +329,6 @@
         <div id="view-shift" class="view-container view-container--active">
             <h2>Shift Dashboard</h2>
             
-            <!-- Main Shift Controls & Progress -->
             <div class="card">
                 <div class="card__header">
                     <span class="card__header-title">
@@ -361,7 +354,6 @@
                 </div>
             </div>
 
-            <!-- Global Breaks -->
             <div class="card">
                 <div class="card__header">
                     <span class="card__header-title">
@@ -391,7 +383,6 @@
         <div id="view-sales-floor" class="view-container">
             <h2>Active Floor</h2>
 
-            <!-- Mock Active Aisle -->
             <div class="card card--active">
                 <div class="card__header">
                     <span class="card__header-title">
@@ -408,7 +399,6 @@
                 </div>
             </div>
 
-            <!-- Mock Completed Aisle -->
             <div class="card card--completed">
                 <div class="card__header">
                     <span class="card__header-title">
@@ -418,25 +408,20 @@
                     <span class="stamped-initials">SS</span>
                 </div>
                 <div class="card__body">
-                    <!-- Body collapses when card--completed modifier is applied -->
                 </div>
             </div>
 
         </div>
 
         <!-- =========================================
-             C. TIMELINE TAB (Empty for now)
+             C. TIMELINE TAB
              ========================================= -->
         <div id="view-timeline" class="view-container">
             <h2>Timeline</h2>
-            <!-- Timeline will be injected here later -->
         </div>
         
     </div>
 
-    <!-- =========================================
-         BOTTOM NAVIGATION BAR
-         ========================================= -->
     <nav class="bottom-nav" aria-label="Bottom Navigation">
         <div class="bottom-nav__item bottom-nav__item--active" data-target="view-shift">
             <span class="material-symbols-rounded bottom-nav__icon">schedule</span>
@@ -453,5 +438,177 @@
             <span class="bottom-nav__label">Timeline</span>
         </div>
     </nav>
+
+    <!-- =========================================
+         PHASE 3: JAVASCRIPT FOUNDATION & STATE
+         ========================================= -->
+    <script>
+        // Use an IIFE (Immediately Invoked Function Expression) or a clean block 
+        // to keep the global scope pollution to an absolute minimum.
+        (() => {
+            'use strict';
+
+            /* --- 1. Tab Navigation Logic --- */
+            const navItems = document.querySelectorAll('.bottom-nav__item');
+            const viewContainers = document.querySelectorAll('.view-container');
+
+            // Attach listeners to all nav items
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active states globally
+                    navItems.forEach(nav => nav.classList.remove('bottom-nav__item--active'));
+                    viewContainers.forEach(view => view.classList.remove('view-container--active'));
+
+                    // Apply active states to target
+                    const targetId = item.getAttribute('data-target');
+                    item.classList.add('bottom-nav__item--active');
+                    document.getElementById(targetId).classList.add('view-container--active');
+                });
+            });
+
+            /* --- 2. IndexedDB Promise Wrapper --- */
+            const DB = {
+                dbName: 'AisleTrackerDB',
+                storeName: 'shifts',
+                version: 1,
+                db: null,
+
+                // Initialize the IndexedDB
+                async init() {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open(this.dbName, this.version);
+
+                        request.onupgradeneeded = (event) => {
+                            const db = event.target.result;
+                            if (!db.objectStoreNames.contains(this.storeName)) {
+                                // ShiftId is our Unix timestamp master key
+                                db.createObjectStore(this.storeName, { keyPath: 'shiftId' });
+                            }
+                        };
+
+                        request.onsuccess = (event) => {
+                            this.db = event.target.result;
+                            console.log('IndexedDB initialized successfully.');
+                            resolve(this.db);
+                        };
+
+                        request.onerror = (event) => {
+                            console.error('IndexedDB init error:', event.target.error);
+                            reject(event.target.error);
+                        };
+                    });
+                },
+
+                // Save or update a shift object
+                async saveShift(shiftObj) {
+                    return new Promise((resolve, reject) => {
+                        if (!this.db) return reject('Database not initialized');
+                        
+                        const transaction = this.db.transaction([this.storeName], 'readwrite');
+                        const store = transaction.objectStore(this.storeName);
+                        const request = store.put(shiftObj);
+
+                        request.onsuccess = () => resolve(true);
+                        request.onerror = (event) => {
+                            console.error('Error saving shift:', event.target.error);
+                            reject(event.target.error);
+                        };
+                    });
+                },
+
+                // Retrieve a shift object by its ID
+                async getShift(shiftId) {
+                    return new Promise((resolve, reject) => {
+                        if (!this.db) return reject('Database not initialized');
+                        
+                        const transaction = this.db.transaction([this.storeName], 'readonly');
+                        const store = transaction.objectStore(this.storeName);
+                        const request = store.get(shiftId);
+
+                        request.onsuccess = (event) => resolve(event.target.result);
+                        request.onerror = (event) => reject(event.target.error);
+                    });
+                }
+            };
+
+            /* --- 3. State Management (The Proxy) --- */
+            // Blueprint mock data matching the exact JSON schema
+            const rawShiftState = {
+                shiftId: 1723847479000, 
+                dateLabel: "2026-08-16",
+                pic: "Dillon",
+                employeeInitials: "SS",
+                startTime: 1723847479000,
+                endTime: null,
+                shiftComments: "",
+                globalBreaks: [
+                    { type: "Lunch", start: 1723861879000, end: 1723863679000 }
+                ],
+                aisles: [
+                    {
+                        id: "aisle_14_frozen",
+                        displayName: "Aisle 14 (Frozen)",
+                        category: "Frozen",
+                        startTime: 1723847500000,
+                        endTime: 1723849500000,
+                        status: "completed",
+                        interruptions: [
+                            { timestamp: 1723848000000, note: "Helped customer find ice cream" }
+                        ],
+                        comments: "Freezer door 4 is squeaking."
+                    },
+                    {
+                        id: "aisle_2_wine",
+                        displayName: "Aisle 2 (Wine)",
+                        category: "Wine",
+                        startTime: 1723849600000,
+                        endTime: null,
+                        status: "active",
+                        interruptions: [],
+                        comments: ""
+                    }
+                ],
+                endOfShiftChecklist: {
+                    returnsFinished: true,
+                    sickCalls: false,
+                    pmCompliances: true,
+                    waterOrdered: true
+                }
+            };
+
+            // Wrap the raw state in a Proxy to detect changes automatically
+            const currentShift = new Proxy(rawShiftState, {
+                set(target, property, value) {
+                    // Update the underlying data
+                    target[property] = value;
+                    
+                    // Log the change
+                    console.log(`State updated: ${property}`, value);
+                    
+                    // Automatically persist to IndexedDB asynchronously
+                    // (Using .catch to handle promise rejection without blocking)
+                    DB.saveShift(target).catch(err => console.error("Auto-save failed", err));
+                    
+                    // Must return true to indicate successful assignment
+                    return true; 
+                }
+            });
+
+            /* --- 4. Initialization --- */
+            // Expose DB and currentShift to the window object temporarily 
+            // so we can interact with them in the browser console for testing.
+            window.DB = DB;
+            window.currentShift = currentShift;
+
+            // Start the DB
+            DB.init().then(() => {
+                // Perform a dry-run save just to populate the DB with our mock data
+                DB.saveShift(currentShift).then(() => {
+                    console.log('Initial mock data populated to IndexedDB.');
+                });
+            });
+
+        })();
+    </script>
 </body>
 </html>
