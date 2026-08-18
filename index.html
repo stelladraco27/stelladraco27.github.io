@@ -1,729 +1,773 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
     <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
-    
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;"
+    />
+
     <title>Fred Meyer Aisle Time Tracker</title>
-    
+
     <!-- Web App Manifest Link -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json" />
 
     <!-- Typography & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
 
     <style>
-        /* =========================================
+      /* =========================================
            1. CSS CUSTOM PROPERTIES (VARIABLES)
            ========================================= */
+      :root {
+        --color-primary: #00467f;
+        --color-accent: #e31837;
+        --color-background: #f4f6f8;
+        --color-surface: #ffffff;
+        --color-text-primary: #1d1d1d;
+        --color-text-secondary: #5f6368;
+        --color-border: #e0e0e0;
+
+        --radius-card: 24px;
+        --radius-button: 50px;
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+
+        --nav-height: 80px;
+      }
+
+      @media (prefers-color-scheme: dark) {
         :root {
-            --color-primary: #00467F;
-            --color-accent: #E31837;
-            --color-background: #F4F6F8;
-            --color-surface: #FFFFFF;
-            --color-text-primary: #1D1D1D;
-            --color-text-secondary: #5F6368;
-            --color-border: #E0E0E0;
-
-            --radius-card: 24px;
-            --radius-button: 50px;
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-
-            --nav-height: 80px;
+          --color-background: #121212;
+          --color-surface: #1e1e1e;
+          --color-text-primary: #e3e3e3;
+          --color-text-secondary: #a0a0a0;
+          --color-border: #333333;
         }
+      }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-background: #121212;
-                --color-surface: #1E1E1E;
-                --color-text-primary: #E3E3E3;
-                --color-text-secondary: #A0A0A0;
-                --color-border: #333333;
-            }
-        }
-
-        /* =========================================
+      /* =========================================
            2. GLOBAL RESET & TYPOGRAPHY
            ========================================= */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-        }
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text-primary);
-            line-height: 1.5;
-        }
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: var(--color-background);
+        color: var(--color-text-primary);
+        line-height: 1.5;
+      }
 
-        h2 {
-            margin-bottom: var(--spacing-md);
-            font-weight: 700;
-        }
+      h2 {
+        margin-bottom: var(--spacing-md);
+        font-weight: 700;
+      }
 
-        /* =========================================
+      /* =========================================
            3. VIEW CONTAINERS (APP LAYOUT)
            ========================================= */
-        .app-container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+      .app-container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-        .view-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--spacing-md);
-            padding-bottom: calc(var(--nav-height) + var(--spacing-md));
-            display: none;
-        }
+      .view-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--spacing-md);
+        padding-bottom: calc(var(--nav-height) + var(--spacing-md));
+        display: none;
+      }
 
-        .view-container--active {
-            display: block; 
-        }
+      .view-container--active {
+        display: block;
+      }
 
-        /* =========================================
+      /* =========================================
            4. COMPONENTS (BEM ARCHITECTURE)
            ========================================= */
-        .card {
-            background-color: var(--color-surface);
-            border-radius: var(--radius-card);
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-md);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
+      .card {
+        background-color: var(--color-surface);
+        border-radius: var(--radius-card);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
 
-        .card__header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-        }
+      .card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+      }
 
-        .card__header-title {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
+      .card__header-title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
 
-        .card__body {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
+      .card__body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
 
-        .card--active {
-            border-color: var(--color-primary);
-        }
+      .card--active {
+        border-color: var(--color-primary);
+      }
 
-        .card--completed {
-            opacity: 0.6;
-            padding: var(--spacing-md);
-        }
+      .card--completed {
+        opacity: 0.6;
+        padding: var(--spacing-md);
+      }
 
-        .card--completed .card__body {
-            display: none;
-        }
+      .card--completed .card__body {
+        display: none;
+      }
 
-        .card--completed .card__header {
-            margin-bottom: 0;
-        }
+      .card--completed .card__header {
+        margin-bottom: 0;
+      }
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-sm);
-            border: none;
-            border-radius: var(--radius-button);
-            padding: 14px var(--spacing-xl);
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s ease, transform 0.1s ease;
-        }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        border: none;
+        border-radius: var(--radius-button);
+        padding: 14px var(--spacing-xl);
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        transition:
+          opacity 0.2s ease,
+          transform 0.1s ease;
+      }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
+      .btn:active {
+        transform: scale(0.98);
+      }
 
-        .btn--primary {
-            background-color: var(--color-primary);
-            color: #FFFFFF;
-        }
+      .btn--primary {
+        background-color: var(--color-primary);
+        color: #ffffff;
+      }
 
-        .btn--secondary {
-            background-color: transparent;
-            color: var(--color-primary);
-            border: 2px solid var(--color-primary);
-        }
+      .btn--secondary {
+        background-color: transparent;
+        color: var(--color-primary);
+        border: 2px solid var(--color-primary);
+      }
 
-        .btn--danger {
-            background-color: var(--color-accent);
-            color: #FFFFFF;
-        }
+      .btn--danger {
+        background-color: var(--color-accent);
+        color: #ffffff;
+      }
 
-        .btn--fab {
-            position: fixed;
-            bottom: calc(var(--nav-height) + var(--spacing-md));
-            right: var(--spacing-md);
-            width: 56px;
-            height: 56px;
-            padding: 0;
-            border-radius: 50%;
-            background-color: var(--color-primary);
-            color: #FFFFFF;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 100;
-        }
+      .btn--fab {
+        position: fixed;
+        bottom: calc(var(--nav-height) + var(--spacing-md));
+        right: var(--spacing-md);
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        border-radius: 50%;
+        background-color: var(--color-primary);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+      }
 
-        .progress-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-xs);
-        }
+      .progress-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+      }
 
-        .progress-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--color-text-secondary);
-            font-weight: 500;
-        }
+      .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--color-text-secondary);
+        font-weight: 500;
+      }
 
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: var(--color-border);
-            border-radius: 4px;
-            overflow: hidden;
-        }
+      .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background-color: var(--color-border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
 
-        .progress-bar {
-            height: 100%;
-            background-color: var(--color-primary);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
+      .progress-bar {
+        height: 100%;
+        background-color: var(--color-primary);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
 
-        .time-display {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            color: var(--color-text-primary);
-        }
+      .time-display {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--color-text-primary);
+      }
 
-        .stamped-initials {
-            font-weight: 700;
-            color: var(--color-primary);
-            background-color: rgba(0, 70, 127, 0.1);
-            padding: 4px 12px;
-            border-radius: var(--radius-button);
-        }
+      .stamped-initials {
+        font-weight: 700;
+        color: var(--color-primary);
+        background-color: rgba(0, 70, 127, 0.1);
+        padding: 4px 12px;
+        border-radius: var(--radius-button);
+      }
 
-        .break-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
+      .break-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
 
-        .break-list__item {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--color-border);
-            padding-bottom: var(--spacing-sm);
-        }
+      .break-list__item {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: var(--spacing-sm);
+      }
 
-        .btn-group {
-            display: flex;
-            gap: var(--spacing-md);
-        }
+      .btn-group {
+        display: flex;
+        gap: var(--spacing-md);
+      }
 
-        /* =========================================
+      /* =========================================
            5. BOTTOM NAVIGATION BAR
            ========================================= */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: var(--nav-height);
-            background-color: var(--color-surface);
-            border-top: 1px solid var(--color-border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: env(safe-area-inset-bottom);
-            z-index: 1000;
-        }
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: var(--nav-height);
+        background-color: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom);
+        z-index: 1000;
+      }
 
-        .bottom-nav__item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 33.33%;
-            height: 100%;
-            color: var(--color-text-secondary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-            cursor: pointer;
-        }
+      .bottom-nav__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 33.33%;
+        height: 100%;
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        transition: color 0.2s ease;
+        cursor: pointer;
+      }
 
-        .bottom-nav__icon {
-            font-size: 28px;
-            margin-bottom: var(--spacing-xs);
-            transition: font-variation-settings 0.2s ease;
-        }
+      .bottom-nav__icon {
+        font-size: 28px;
+        margin-bottom: var(--spacing-xs);
+        transition: font-variation-settings 0.2s ease;
+      }
 
-        .bottom-nav__label {
-            font-size: 12px;
-            font-weight: 500;
-        }
+      .bottom-nav__label {
+        font-size: 12px;
+        font-weight: 500;
+      }
 
-        .bottom-nav__item--active {
-            color: var(--color-primary);
-        }
+      .bottom-nav__item--active {
+        color: var(--color-primary);
+      }
 
-        .bottom-nav__item--active .bottom-nav__icon {
-            font-variation-settings: 'FILL' 1;
-        }
+      .bottom-nav__item--active .bottom-nav__icon {
+        font-variation-settings: "FILL" 1;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="app-container">
-        
-        <!-- =========================================
+      <!-- =========================================
              A. SHIFT TAB
              ========================================= -->
-        <div id="view-shift" class="view-container view-container--active">
-            <h2>Shift Dashboard</h2>
-            
-            <div class="card">
-                <div class="card__header">
-                    <span class="card__header-title">
-                        <span class="material-symbols-rounded">schedule</span>
-                        Time to Go
-                    </span>
-                </div>
-                <div class="card__body">
-                    <div class="progress-wrapper">
-                        <div class="progress-labels">
-                            <span>Started: 2:00 PM</span>
-                            <span>Est. End: 10:30 PM</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="shift-progress-bar" style="width: 0%;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button id="btn-start-shift" class="btn btn--primary">Start Shift</button>
-                        <button id="btn-end-shift" class="btn btn--danger">End Shift</button>
-                    </div>
-                </div>
+      <div id="view-shift" class="view-container view-container--active">
+        <h2>Shift Dashboard</h2>
+
+        <div class="card">
+          <div class="card__header">
+            <span class="card__header-title">
+              <span class="material-symbols-rounded">schedule</span>
+              Time to Go
+            </span>
+          </div>
+          <div class="card__body">
+            <div class="progress-wrapper">
+              <div class="progress-labels">
+                <span>Started: 2:00 PM</span>
+                <span>Est. End: 10:30 PM</span>
+              </div>
+              <div class="progress-bar-container">
+                <div
+                  class="progress-bar"
+                  id="shift-progress-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
             </div>
 
-            <div class="card">
-                <div class="card__header">
-                    <span class="card__header-title">
-                        <span class="material-symbols-rounded">restaurant</span>
-                        Global Breaks
-                    </span>
-                </div>
-                <div class="card__body">
-                    <ul class="break-list" id="shift-break-list">
-                        <!-- Breaks rendered dynamically here via JS -->
-                    </ul>
-                    <button class="btn btn--secondary">Log Break</button>
-                </div>
+            <div class="btn-group">
+              <button id="btn-start-shift" class="btn btn--primary">
+                Start Shift
+              </button>
+              <button id="btn-end-shift" class="btn btn--danger">
+                End Shift
+              </button>
             </div>
+          </div>
         </div>
 
-        <!-- =========================================
+        <div class="card">
+          <div class="card__header">
+            <span class="card__header-title">
+              <span class="material-symbols-rounded">restaurant</span>
+              Global Breaks
+            </span>
+          </div>
+          <div class="card__body">
+            <ul class="break-list" id="shift-break-list">
+              <!-- Breaks rendered dynamically here via JS -->
+            </ul>
+            <button class="btn btn--secondary">Log Break</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================
              B. SALES FLOOR TAB
              ========================================= -->
-        <div id="view-sales-floor" class="view-container">
-            <h2>Active Floor</h2>
-            <!-- Outer container for dynamically injected aisle cards -->
-            <div id="sales-floor-container">
-                <!-- Aisle cards rendered dynamically here via JS -->
-            </div>
+      <div id="view-sales-floor" class="view-container">
+        <h2>Active Floor</h2>
+        <!-- Outer container for dynamically injected aisle cards -->
+        <div id="sales-floor-container">
+          <!-- Aisle cards rendered dynamically here via JS -->
         </div>
+      </div>
 
-        <!-- =========================================
+      <!-- =========================================
              C. TIMELINE TAB
              ========================================= -->
-        <div id="view-timeline" class="view-container">
-            <h2>Timeline</h2>
-        </div>
-        
+      <div id="view-timeline" class="view-container">
+        <h2>Timeline</h2>
+      </div>
     </div>
 
     <!-- =========================================
          BOTTOM NAVIGATION BAR
          ========================================= -->
     <nav class="bottom-nav" aria-label="Bottom Navigation">
-        <div class="bottom-nav__item bottom-nav__item--active" data-target="view-shift">
-            <span class="material-symbols-rounded bottom-nav__icon">schedule</span>
-            <span class="bottom-nav__label">Shift</span>
-        </div>
-        
-        <div class="bottom-nav__item" data-target="view-sales-floor">
-            <span class="material-symbols-rounded bottom-nav__icon">storefront</span>
-            <span class="bottom-nav__label">Floor</span>
-        </div>
-        
-        <div class="bottom-nav__item" data-target="view-timeline">
-            <span class="material-symbols-rounded bottom-nav__icon">history</span>
-            <span class="bottom-nav__label">Timeline</span>
-        </div>
+      <div
+        class="bottom-nav__item bottom-nav__item--active"
+        data-target="view-shift"
+      >
+        <span class="material-symbols-rounded bottom-nav__icon">schedule</span>
+        <span class="bottom-nav__label">Shift</span>
+      </div>
+
+      <div class="bottom-nav__item" data-target="view-sales-floor">
+        <span class="material-symbols-rounded bottom-nav__icon"
+          >storefront</span
+        >
+        <span class="bottom-nav__label">Floor</span>
+      </div>
+
+      <div class="bottom-nav__item" data-target="view-timeline">
+        <span class="material-symbols-rounded bottom-nav__icon">history</span>
+        <span class="bottom-nav__label">Timeline</span>
+      </div>
     </nav>
     <!-- =========================================
          JAVASCRIPT FOUNDATION & UI BINDING
          ========================================= -->
     <script>
-        (() => {
-            'use strict';
+      (() => {
+        "use strict";
 
-            /* --- 1. DOM Element Selectors --- */
-            // Navigation
-            const navItems = document.querySelectorAll('.bottom-nav__item');
-            const viewContainers = document.querySelectorAll('.view-container');
-            
-            // Shift Tab Elements
-            const shiftProgressBar = document.getElementById('shift-progress-bar');
-            const shiftBreakList = document.getElementById('shift-break-list');
-            const btnStartShift = document.getElementById('btn-start-shift');
-            const btnEndShift = document.getElementById('btn-end-shift');
+        /* --- 1. DOM Element Selectors --- */
+        // Navigation
+        const navItems = document.querySelectorAll(".bottom-nav__item");
+        const viewContainers = document.querySelectorAll(".view-container");
 
-            // Sales Floor Tab Elements
-            const salesFloorContainer = document.getElementById('sales-floor-container');
+        // Shift Tab Elements
+        const shiftProgressBar = document.getElementById("shift-progress-bar");
+        const shiftBreakList = document.getElementById("shift-break-list");
+        const btnStartShift = document.getElementById("btn-start-shift");
+        const btnEndShift = document.getElementById("btn-end-shift");
 
+        // Sales Floor Tab Elements
+        const salesFloorContainer = document.getElementById(
+          "sales-floor-container",
+        );
 
-            /* --- 2. Tab Navigation Logic --- */
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    navItems.forEach(nav => nav.classList.remove('bottom-nav__item--active'));
-                    viewContainers.forEach(view => view.classList.remove('view-container--active'));
+        /* --- 2. Tab Navigation Logic --- */
+        navItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            navItems.forEach((nav) =>
+              nav.classList.remove("bottom-nav__item--active"),
+            );
+            viewContainers.forEach((view) =>
+              view.classList.remove("view-container--active"),
+            );
 
-                    const targetId = item.getAttribute('data-target');
-                    item.classList.add('bottom-nav__item--active');
-                    document.getElementById(targetId).classList.add('view-container--active');
-                });
+            const targetId = item.getAttribute("data-target");
+            item.classList.add("bottom-nav__item--active");
+            document
+              .getElementById(targetId)
+              .classList.add("view-container--active");
+          });
+        });
+
+        /* --- 3. IndexedDB Promise Wrapper --- */
+        const DB = {
+          dbName: "AisleTrackerDB",
+          storeName: "shifts",
+          version: 1,
+          db: null,
+
+          async init() {
+            return new Promise((resolve, reject) => {
+              const request = indexedDB.open(this.dbName, this.version);
+
+              request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(this.storeName)) {
+                  db.createObjectStore(this.storeName, { keyPath: "shiftId" });
+                }
+              };
+
+              request.onsuccess = (event) => {
+                this.db = event.target.result;
+                console.log("IndexedDB initialized successfully.");
+                resolve(this.db);
+              };
+
+              request.onerror = (event) => {
+                console.error("IndexedDB init error:", event.target.error);
+                reject(event.target.error);
+              };
             });
+          },
 
+          async saveShift(shiftObj) {
+            return new Promise((resolve, reject) => {
+              if (!this.db) return reject("Database not initialized");
 
-            /* --- 3. IndexedDB Promise Wrapper --- */
-            const DB = {
-                dbName: 'AisleTrackerDB',
-                storeName: 'shifts',
-                version: 1,
-                db: null,
+              const transaction = this.db.transaction(
+                [this.storeName],
+                "readwrite",
+              );
+              const store = transaction.objectStore(this.storeName);
+              const request = store.put(shiftObj);
 
-                async init() {
-                    return new Promise((resolve, reject) => {
-                        const request = indexedDB.open(this.dbName, this.version);
-
-                        request.onupgradeneeded = (event) => {
-                            const db = event.target.result;
-                            if (!db.objectStoreNames.contains(this.storeName)) {
-                                db.createObjectStore(this.storeName, { keyPath: 'shiftId' });
-                            }
-                        };
-
-                        request.onsuccess = (event) => {
-                            this.db = event.target.result;
-                            console.log('IndexedDB initialized successfully.');
-                            resolve(this.db);
-                        };
-
-                        request.onerror = (event) => {
-                            console.error('IndexedDB init error:', event.target.error);
-                            reject(event.target.error);
-                        };
-                    });
-                },
-
-                async saveShift(shiftObj) {
-                    return new Promise((resolve, reject) => {
-                        if (!this.db) return reject('Database not initialized');
-                        
-                        const transaction = this.db.transaction([this.storeName], 'readwrite');
-                        const store = transaction.objectStore(this.storeName);
-                        const request = store.put(shiftObj);
-
-                        request.onsuccess = () => resolve(true);
-                        request.onerror = (event) => reject(event.target.error);
-                    });
-                }
-            };
-
-
-            /* --- 4. State Management (The Proxy) --- */
-            const rawShiftState = {
-                shiftId: 1723847479000, 
-                dateLabel: "2026-08-16",
-                pic: "Dillon",
-                employeeInitials: "SS",
-                startTime: null, // Set to null by default for testing the start button
-                endTime: null,
-                shiftComments: "",
-                globalBreaks: [
-                    { type: "Lunch", start: 1723861879000, end: 1723863679000 }
-                ],
-                aisles: [
-                    {
-                        id: "aisle_14_frozen",
-                        displayName: "Aisle 14 (Frozen)",
-                        category: "Frozen",
-                        startTime: 1723847500000,
-                        endTime: null,
-                        status: "active",
-                        interruptions: [],
-                        comments: "Freezer door 4 is squeaking."
-                    },
-                    {
-                        id: "aisle_2_wine",
-                        displayName: "Aisle 2 (Wine)",
-                        category: "Wine",
-                        startTime: 1723849600000,
-                        endTime: null,
-                        status: "active",
-                        interruptions: [],
-                        comments: ""
-                    }
-                ],
-                endOfShiftChecklist: {
-                    returnsFinished: true,
-                    sickCalls: false,
-                    pmCompliances: true,
-                    waterOrdered: true
-                }
-            };
-
-            const currentShift = new Proxy(rawShiftState, {
-                set(target, property, value) {
-                    target[property] = value;
-                    console.log(`State updated: ${property}`, value);
-                    
-                    // Auto-save to DB
-                    DB.saveShift(target).catch(err => console.error("Auto-save failed", err));
-                    
-                    // Reactivity: Re-render the UI when state changes
-                    renderShiftDashboard();
-                    renderSalesFloor();
-                    
-                    return true; 
-                }
+              request.onsuccess = () => resolve(true);
+              request.onerror = (event) => reject(event.target.error);
             });
+          },
+        };
 
+        /* --- 4. State Management (The Proxy) --- */
+        const rawShiftState = {
+          shiftId: 1723847479000,
+          dateLabel: "2026-08-16",
+          pic: "Dillon",
+          employeeInitials: "SS",
+          startTime: null, // Set to null by default for testing the start button
+          endTime: null,
+          shiftComments: "",
+          globalBreaks: [
+            { type: "Lunch", start: 1723861879000, end: 1723863679000 },
+          ],
+          aisles: [
+            {
+              id: "aisle_14_frozen",
+              displayName: "Aisle 14 (Frozen)",
+              category: "Frozen",
+              startTime: 1723847500000,
+              endTime: null,
+              status: "active",
+              interruptions: [],
+              comments: "Freezer door 4 is squeaking.",
+            },
+            {
+              id: "aisle_2_wine",
+              displayName: "Aisle 2 (Wine)",
+              category: "Wine",
+              startTime: 1723849600000,
+              endTime: null,
+              status: "active",
+              interruptions: [],
+              comments: "",
+            },
+          ],
+          endOfShiftChecklist: {
+            returnsFinished: true,
+            sickCalls: false,
+            pmCompliances: true,
+            waterOrdered: true,
+          },
+        };
 
-            /* --- 5. UI Rendering Logic --- */
-            const getCategoryIcon = (category) => {
-                const iconMap = {
-                    'Frozen': 'ac_unit',
-                    'Wine': 'wine_bar',
-                    'Hydration': 'water_drop',
-                    'Dairy': 'water_bottle',
-                    'HABA': 'medication'
-                };
-                return iconMap[category] || 'storefront';
-            };
+        const currentShift = new Proxy(rawShiftState, {
+          set(target, property, value) {
+            target[property] = value;
+            console.log(`State updated: ${property}`, value);
 
-            function renderShiftDashboard() {
-                if (currentShift.startTime) {
-                    const now = Date.now();
-                    const elapsedMs = now - currentShift.startTime;
-                    const eightHoursInMs = 8 * 60 * 60 * 1000;
-                    
-                    let progressPercent = (elapsedMs / eightHoursInMs) * 100;
-                    progressPercent = Math.max(0, Math.min(progressPercent, 100));
-                    
-                    shiftProgressBar.style.width = `${progressPercent}%`;
-                } else {
-                    shiftProgressBar.style.width = '0%';
-                }
+            // Auto-save to DB
+            DB.saveShift(target).catch((err) =>
+              console.error("Auto-save failed", err),
+            );
 
-                shiftBreakList.innerHTML = ''; 
+            // Reactivity: Re-render the UI when state changes
+            renderShiftDashboard();
+            renderSalesFloor();
 
-                currentShift.globalBreaks.forEach(breakItem => {
-                    const li = document.createElement('li');
-                    li.className = 'break-list__item';
+            return true;
+          },
+        });
 
-                    const typeSpan = document.createElement('span');
-                    typeSpan.textContent = breakItem.type;
+        /* --- 5. UI Rendering Logic --- */
+        const getCategoryIcon = (category) => {
+          const iconMap = {
+            Frozen: "ac_unit",
+            Wine: "wine_bar",
+            Hydration: "water_drop",
+            Dairy: "water_bottle",
+            HABA: "medication",
+          };
+          return iconMap[category] || "storefront";
+        };
 
-                    const timeStrong = document.createElement('strong');
-                    const startTime = new Date(breakItem.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    const endTime = breakItem.end ? new Date(breakItem.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing';
-                    timeStrong.textContent = `${startTime} - ${endTime}`;
+        function renderShiftDashboard() {
+          if (currentShift.startTime) {
+            const now = Date.now();
+            const elapsedMs = now - currentShift.startTime;
+            const eightHoursInMs = 8 * 60 * 60 * 1000;
 
-                    li.appendChild(typeSpan);
-                    li.appendChild(timeStrong);
-                    shiftBreakList.appendChild(li);
-                });
+            let progressPercent = (elapsedMs / eightHoursInMs) * 100;
+            progressPercent = Math.max(0, Math.min(progressPercent, 100));
+
+            shiftProgressBar.style.width = `${progressPercent}%`;
+          } else {
+            shiftProgressBar.style.width = "0%";
+          }
+
+          shiftBreakList.innerHTML = "";
+
+          currentShift.globalBreaks.forEach((breakItem) => {
+            const li = document.createElement("li");
+            li.className = "break-list__item";
+
+            const typeSpan = document.createElement("span");
+            typeSpan.textContent = breakItem.type;
+
+            const timeStrong = document.createElement("strong");
+            const startTime = new Date(breakItem.start).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            const endTime = breakItem.end
+              ? new Date(breakItem.end).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "Ongoing";
+            timeStrong.textContent = `${startTime} - ${endTime}`;
+
+            li.appendChild(typeSpan);
+            li.appendChild(timeStrong);
+            shiftBreakList.appendChild(li);
+          });
+        }
+
+        function renderSalesFloor() {
+          // Safely clear out the container before dynamically rebuilding
+          salesFloorContainer.innerHTML = "";
+
+          currentShift.aisles.forEach((aisle) => {
+            const card = document.createElement("div");
+            card.className = "card";
+            if (aisle.status === "active") {
+              card.classList.add("card--active");
+            } else if (aisle.status === "completed") {
+              card.classList.add("card--completed");
             }
 
-            function renderSalesFloor() {
-                // Safely clear out the container before dynamically rebuilding
-                salesFloorContainer.innerHTML = '';
+            // --- Card Header ---
+            const header = document.createElement("div");
+            header.className = "card__header";
 
-                currentShift.aisles.forEach(aisle => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    if (aisle.status === 'active') {
-                        card.classList.add('card--active');
-                    } else if (aisle.status === 'completed') {
-                        card.classList.add('card--completed');
-                    }
+            const headerTitle = document.createElement("span");
+            headerTitle.className = "card__header-title";
 
-                    // --- Card Header ---
-                    const header = document.createElement('div');
-                    header.className = 'card__header';
+            const icon = document.createElement("span");
+            icon.className = "material-symbols-rounded";
+            icon.textContent = getCategoryIcon(aisle.category);
 
-                    const headerTitle = document.createElement('span');
-                    headerTitle.className = 'card__header-title';
+            const titleText = document.createTextNode(` ${aisle.displayName}`);
 
-                    const icon = document.createElement('span');
-                    icon.className = 'material-symbols-rounded';
-                    icon.textContent = getCategoryIcon(aisle.category);
+            headerTitle.appendChild(icon);
+            headerTitle.appendChild(titleText);
+            header.appendChild(headerTitle);
 
-                    const titleText = document.createTextNode(` ${aisle.displayName}`);
-
-                    headerTitle.appendChild(icon);
-                    headerTitle.appendChild(titleText);
-                    header.appendChild(headerTitle);
-
-                    if (aisle.status === 'completed' && currentShift.employeeInitials) {
-                        const stampedInitials = document.createElement('span');
-                        stampedInitials.className = 'stamped-initials';
-                        stampedInitials.textContent = currentShift.employeeInitials;
-                        header.appendChild(stampedInitials);
-                    }
-
-                    card.appendChild(header);
-
-                    // --- Card Body ---
-                    const body = document.createElement('div');
-                    body.className = 'card__body';
-
-                    const timeDisplay = document.createElement('div');
-                    timeDisplay.className = 'time-display';
-                    let displayString = '00:00';
-                    
-                    if (aisle.startTime) {
-                        const endTimeTarget = aisle.endTime ? aisle.endTime : Date.now();
-                        const diffMins = Math.floor((endTimeTarget - aisle.startTime) / 60000);
-                        const hours = String(Math.floor(diffMins / 60)).padStart(2, '0');
-                        const mins = String(diffMins % 60).padStart(2, '0');
-                        displayString = `${hours}:${mins}`;
-                    }
-                    timeDisplay.textContent = displayString;
-                    body.appendChild(timeDisplay);
-
-                    // Render Complete Button and inject data-id
-                    if (aisle.status === 'active' || !aisle.status) {
-                        const completeBtn = document.createElement('button');
-                        completeBtn.className = 'btn btn--primary';
-                        completeBtn.dataset.id = aisle.id; // Inject ID for event delegation
-
-                        const completeIcon = document.createElement('span');
-                        completeIcon.className = 'material-symbols-rounded';
-                        completeIcon.textContent = 'check_circle';
-
-                        const completeText = document.createTextNode(' Complete');
-
-                        completeBtn.appendChild(completeIcon);
-                        completeBtn.appendChild(completeText);
-                        body.appendChild(completeBtn);
-                    }
-
-                    card.appendChild(body);
-                    salesFloorContainer.appendChild(card);
-                });
+            if (aisle.status === "completed" && currentShift.employeeInitials) {
+              const stampedInitials = document.createElement("span");
+              stampedInitials.className = "stamped-initials";
+              stampedInitials.textContent = currentShift.employeeInitials;
+              header.appendChild(stampedInitials);
             }
 
+            card.appendChild(header);
 
-            /* --- 6. Event Listeners & Interaction --- */
-            
-            // Shift Controls
-            btnStartShift.addEventListener('click', () => {
-                if (!currentShift.startTime) {
-                    currentShift.startTime = Date.now();
-                }
-            });
+            // --- Card Body ---
+            const body = document.createElement("div");
+            body.className = "card__body";
 
-            btnEndShift.addEventListener('click', () => {
-                if (!currentShift.endTime) {
-                    currentShift.endTime = Date.now();
-                }
-            });
+            const timeDisplay = document.createElement("div");
+            timeDisplay.className = "time-display";
+            let displayString = "00:00";
 
-            // Sales Floor Interactions (Event Delegation)
-            salesFloorContainer.addEventListener('click', (event) => {
-                // Check if we clicked the primary button or something inside it
-                const btn = event.target.closest('.btn--primary');
-                
-                if (btn && btn.dataset.id) {
-                    const aisleId = btn.dataset.id;
-                    
-                    // Create a shallow copy to ensure Proxy set trap triggers properly
-                    const updatedAisles = [...currentShift.aisles];
-                    const aisleIndex = updatedAisles.findIndex(a => a.id === aisleId);
-                    
-                    if (aisleIndex !== -1) {
-                        updatedAisles[aisleIndex].status = 'completed';
-                        updatedAisles[aisleIndex].endTime = Date.now();
-                        
-                        // Reassigning the array triggers the proxy
-                        currentShift.aisles = updatedAisles;
-                    }
-                }
-            });
+            if (aisle.startTime) {
+              const endTimeTarget = aisle.endTime ? aisle.endTime : Date.now();
+              const diffMins = Math.floor(
+                (endTimeTarget - aisle.startTime) / 60000,
+              );
+              const hours = String(Math.floor(diffMins / 60)).padStart(2, "0");
+              const mins = String(diffMins % 60).padStart(2, "0");
+              displayString = `${hours}:${mins}`;
+            }
+            timeDisplay.textContent = displayString;
+            body.appendChild(timeDisplay);
 
+            // Render Complete Button and inject data-id
+            if (aisle.status === "active" || !aisle.status) {
+              const completeBtn = document.createElement("button");
+              completeBtn.className = "btn btn--primary";
+              completeBtn.dataset.id = aisle.id; // Inject ID for event delegation
 
-            /* --- 7. Initialization --- */
-            window.DB = DB;
-            window.currentShift = currentShift;
+              const completeIcon = document.createElement("span");
+              completeIcon.className = "material-symbols-rounded";
+              completeIcon.textContent = "check_circle";
 
-            DB.init().then(() => {
-                DB.saveShift(currentShift).then(() => {
-                    console.log('Initial mock data populated to IndexedDB.');
-                    
-                    // Trigger initial renders
-                    renderShiftDashboard();
-                    renderSalesFloor();
-                });
-            });
+              const completeText = document.createTextNode(" Complete");
 
-        })();
+              completeBtn.appendChild(completeIcon);
+              completeBtn.appendChild(completeText);
+              body.appendChild(completeBtn);
+            }
+
+            card.appendChild(body);
+            salesFloorContainer.appendChild(card);
+          });
+        }
+
+        /* --- 6. Event Listeners & Interaction --- */
+
+        // Shift Controls
+        btnStartShift.addEventListener("click", () => {
+          if (!currentShift.startTime) {
+            currentShift.startTime = Date.now();
+          }
+        });
+
+        btnEndShift.addEventListener("click", () => {
+          if (!currentShift.endTime) {
+            currentShift.endTime = Date.now();
+          }
+        });
+
+        // Sales Floor Interactions (Event Delegation)
+        salesFloorContainer.addEventListener("click", (event) => {
+          // Check if we clicked the primary button or something inside it
+          const btn = event.target.closest(".btn--primary");
+
+          if (btn && btn.dataset.id) {
+            const aisleId = btn.dataset.id;
+
+            // Create a shallow copy to ensure Proxy set trap triggers properly
+            const updatedAisles = [...currentShift.aisles];
+            const aisleIndex = updatedAisles.findIndex((a) => a.id === aisleId);
+
+            if (aisleIndex !== -1) {
+              updatedAisles[aisleIndex].status = "completed";
+              updatedAisles[aisleIndex].endTime = Date.now();
+
+              // Reassigning the array triggers the proxy
+              currentShift.aisles = updatedAisles;
+            }
+          }
+        });
+
+        /* --- 7. Initialization --- */
+        window.DB = DB;
+        window.currentShift = currentShift;
+
+        DB.init().then(() => {
+          DB.saveShift(currentShift).then(() => {
+            console.log("Initial mock data populated to IndexedDB.");
+
+            // Trigger initial renders
+            renderShiftDashboard();
+            renderSalesFloor();
+          });
+        });
+      })();
     </script>
-</body>
+  </body>
 </html>
