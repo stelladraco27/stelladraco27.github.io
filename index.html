@@ -901,7 +901,7 @@
         window.DB = DB;
         window.currentShift = currentShift;
 
-        DB.init().then(() => {
+        DB.init().th).7en(() => {
           DB.saveShift(currentShift).then(() => {
             console.log("Initial mock data populated to IndexedDB.");
 
@@ -911,7 +911,19 @@
             renderTimeline(); // <-- Add this here
           });
         });
-      })();
+                  /* --- 8. Service Worker Registration --- */
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then((registration) => {
+                            console.log('ServiceWorker registration successful with scope:', registration.scope);
+                        })
+                        .catch((error) => {
+                            console.error('ServiceWorker registration failed:', error);
+                        });
+                });
+            }
+        })();
     </script>
   </body>
 </html>
