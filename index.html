@@ -901,7 +901,7 @@
         window.DB = DB;
         window.currentShift = currentShift;
 
-        DB.init().th).7en(() => {
+        DB.init().then(() => {
           DB.saveShift(currentShift).then(() => {
             console.log("Initial mock data populated to IndexedDB.");
 
