@@ -911,6 +911,15 @@
             renderTimeline(); // <-- Add this here
           });
         });
+                /* --- Heartbeat Timer --- */
+        // Refresh the visual timers every 60 seconds
+        setInterval(() => {
+            if (currentShift.startTime) {
+                renderShiftDashboard();
+                renderSalesFloor();
+            }
+        }, 60000);
+        
         /* --- 8. Service Worker Registration --- */
         if ("serviceWorker" in navigator) {
           window.addEventListener("load", () => {
