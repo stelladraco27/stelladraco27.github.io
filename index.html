@@ -451,16 +451,15 @@
         </div>
       </div>
 
-              <!-- =========================================
+      <!-- =========================================
              C. TIMELINE TAB
              ========================================= -->
-        <div id="view-timeline" class="view-container">
-            <h2>Timeline</h2>
-            <ul id="timeline-feed" class="timeline-list">
-                <!-- Timeline items rendered dynamically here via JS -->
-            </ul>
-        </div>
-
+      <div id="view-timeline" class="view-container">
+        <h2>Timeline</h2>
+        <ul id="timeline-feed" class="timeline-list">
+          <!-- Timeline items rendered dynamically here via JS -->
+        </ul>
+      </div>
     </div>
 
     <!-- =========================================
@@ -498,9 +497,8 @@
         // Navigation
         const navItems = document.querySelectorAll(".bottom-nav__item");
         const viewContainers = document.querySelectorAll(".view-container");
-                    // Timeline Tab Elements
-            const timelineFeed = document.getElementById('timeline-feed');
-
+        // Timeline Tab Elements
+        const timelineFeed = document.getElementById("timeline-feed");
 
         // Shift Tab Elements
         const shiftProgressBar = document.getElementById("shift-progress-bar");
@@ -621,24 +619,24 @@
           },
         };
 
-        
-                    const currentShift = new Proxy(rawShiftState, {
-                set(target, property, value) {
-                    target[property] = value;
-                    console.log(`State updated: ${property}`, value);
-                    
-                    // Auto-save to DB
-                    DB.saveShift(target).catch(err => console.error("Auto-save failed", err));
-                    
-                    // Reactivity: Re-render the UI when state changes
-                    renderShiftDashboard();
-                    renderSalesFloor();
-                    renderTimeline(); // <-- Add this here
-                    
-                    return true; 
-                }
-            });
+        const currentShift = new Proxy(rawShiftState, {
+          set(target, property, value) {
+            target[property] = value;
+            console.log(`State updated: ${property}`, value);
 
+            // Auto-save to DB
+            DB.saveShift(target).catch((err) =>
+              console.error("Auto-save failed", err),
+            );
+
+            // Reactivity: Re-render the UI when state changes
+            renderShiftDashboard();
+            renderSalesFloor();
+            renderTimeline(); // <-- Add this here
+
+            return true;
+          },
+        });
 
         /* --- 5. UI Rendering Logic --- */
         const getCategoryIcon = (category) => {
@@ -774,87 +772,93 @@
             salesFloorContainer.appendChild(card);
           });
         }
-            function renderTimeline() {
-                // Safely clear out the container
-                timelineFeed.innerHTML = '';
+        function renderTimeline() {
+          // Safely clear out the container
+          timelineFeed.innerHTML = "";
 
-                const shiftEvents = [];
+          const shiftEvents = [];
 
-                // 1. Check for Shift Start
-                if (currentShift.startTime) {
-                    shiftEvents.push({
-                        time: currentShift.startTime,
-                        label: 'Shift Started',
-                        icon: 'schedule'
-                    });
-                }
+          // 1. Check for Shift Start
+          if (currentShift.startTime) {
+            shiftEvents.push({
+              time: currentShift.startTime,
+              label: "Shift Started",
+              icon: "schedule",
+            });
+          }
 
-                // 2. Loop through Global Breaks
-                if (currentShift.globalBreaks && currentShift.globalBreaks.length > 0) {
-                    currentShift.globalBreaks.forEach(b => {
-                        if (b.start) {
-                            shiftEvents.push({
-                                time: b.start,
-                                label: `Started ${b.type}`,
-                                icon: 'restaurant'
-                            });
-                        }
-                        if (b.end) {
-                            shiftEvents.push({
-                                time: b.end,
-                                label: `Ended ${b.type}`,
-                                icon: 'check_circle'
-                            });
-                        }
-                    });
-                }
-
-                // 3. Loop through Aisles
-                if (currentShift.aisles && currentShift.aisles.length > 0) {
-                    currentShift.aisles.forEach(aisle => {
-                        if (aisle.status === 'completed' && aisle.endTime) {
-                            shiftEvents.push({
-                                time: aisle.endTime,
-                                label: `Completed ${aisle.displayName}`,
-                                icon: 'check_circle'
-                            });
-                        }
-                    });
-                }
-
-                // 4. Sort Chronologically
-                shiftEvents.sort((a, b) => a.time - b.time);
-
-                // 5. Render to DOM
-                shiftEvents.forEach(eventData => {
-                    const li = document.createElement('li');
-                    li.className = 'timeline-item';
-
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'timeline-item__content';
-
-                    const timeSpan = document.createElement('span');
-                    timeSpan.className = 'timeline-item__time';
-                    timeSpan.textContent = new Date(eventData.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                    const iconSpan = document.createElement('span');
-                    iconSpan.className = 'material-symbols-rounded';
-                    iconSpan.style.fontSize = '18px';
-                    iconSpan.style.color = 'var(--color-primary)';
-                    iconSpan.textContent = eventData.icon;
-
-                    const labelSpan = document.createElement('span');
-                    labelSpan.className = 'timeline-item__label';
-                    labelSpan.textContent = eventData.label;
-
-                    contentDiv.appendChild(timeSpan);
-                    contentDiv.appendChild(iconSpan);
-                    contentDiv.appendChild(labelSpan);
-                    li.appendChild(contentDiv);
-
-                    timelineFeed.appendChild(li);
+          // 2. Loop through Global Breaks
+          if (
+            currentShift.globalBreaks &&
+            currentShift.globalBreaks.length > 0
+          ) {
+            currentShift.globalBreaks.forEach((b) => {
+              if (b.start) {
+                shiftEvents.push({
+                  time: b.start,
+                  label: `Started ${b.type}`,
+                  icon: "restaurant",
                 });
-            }
+              }
+              if (b.end) {
+                shiftEvents.push({
+                  time: b.end,
+                  label: `Ended ${b.type}`,
+                  icon: "check_circle",
+                });
+              }
+            });
+          }
+
+          // 3. Loop through Aisles
+          if (currentShift.aisles && currentShift.aisles.length > 0) {
+            currentShift.aisles.forEach((aisle) => {
+              if (aisle.status === "completed" && aisle.endTime) {
+                shiftEvents.push({
+                  time: aisle.endTime,
+                  label: `Completed ${aisle.displayName}`,
+                  icon: "check_circle",
+                });
+              }
+            });
+          }
+
+          // 4. Sort Chronologically
+          shiftEvents.sort((a, b) => a.time - b.time);
+
+          // 5. Render to DOM
+          shiftEvents.forEach((eventData) => {
+            const li = document.createElement("li");
+            li.className = "timeline-item";
+
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "timeline-item__content";
+
+            const timeSpan = document.createElement("span");
+            timeSpan.className = "timeline-item__time";
+            timeSpan.textContent = new Date(eventData.time).toLocaleTimeString(
+              [],
+              { hour: "2-digit", minute: "2-digit" },
+            );
+
+            const iconSpan = document.createElement("span");
+            iconSpan.className = "material-symbols-rounded";
+            iconSpan.style.fontSize = "18px";
+            iconSpan.style.color = "var(--color-primary)";
+            iconSpan.textContent = eventData.icon;
+
+            const labelSpan = document.createElement("span");
+            labelSpan.className = "timeline-item__label";
+            labelSpan.textContent = eventData.label;
+
+            contentDiv.appendChild(timeSpan);
+            contentDiv.appendChild(iconSpan);
+            contentDiv.appendChild(labelSpan);
+            li.appendChild(contentDiv);
+
+            timelineFeed.appendChild(li);
+          });
+        }
 
         /* --- 6. Event Listeners & Interaction --- */
 
@@ -897,18 +901,16 @@
         window.DB = DB;
         window.currentShift = currentShift;
 
-        
-                    DB.init().then(() => {
-                DB.saveShift(currentShift).then(() => {
-                    console.log('Initial mock data populated to IndexedDB.');
-                    
-                    // Trigger initial renders
-                    renderShiftDashboard();
-                    renderSalesFloor();
-                    renderTimeline(); // <-- Add this here
-                });
-            });
+        DB.init().then(() => {
+          DB.saveShift(currentShift).then(() => {
+            console.log("Initial mock data populated to IndexedDB.");
 
+            // Trigger initial renders
+            renderShiftDashboard();
+            renderSalesFloor();
+            renderTimeline(); // <-- Add this here
+          });
+        });
       })();
     </script>
   </body>
